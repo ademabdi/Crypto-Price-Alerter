@@ -1,0 +1,14 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import requests 
+import json
+from pycoingecko import CoinGeckoAPI
+
+cg = CoinGeckoAPI()
+
+pricelist =  cg.get_price(ids = ['bitcoin','ethereum','ripple','solo-coin'], vs_currencies = ['usd','eur'])
+
+
+cryptolist = pd.DataFrame(pricelist)
+
+print(cryptolist.head())

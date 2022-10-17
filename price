@@ -6,9 +6,22 @@ from pycoingecko import CoinGeckoAPI
 
 cg = CoinGeckoAPI()
 
-pricelist =  cg.get_price(ids = ['bitcoin','ethereum','ripple','solo-coin'], vs_currencies = ['usd','eur'])
+response = requests.get("https://api.coingecko.com/api/v3/coins/list?include_platform=false")
+data = json.loads(response.content)
+
+empt = []
+for i in data[1600:1611]:
+    for key in i:
+        empt.append(i['id'])
+        break
+
+
+print(empt)
+pricelist =  cg.get_price(ids = empt, vs_currencies = ['usd'],include_market_cap = "true")
+
 
 
 cryptolist = pd.DataFrame(pricelist)
 
 print(cryptolist.head())
+#print(pricelist["ripple"])

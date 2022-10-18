@@ -1,27 +1,50 @@
+from dataclasses import dataclass
 import pandas as pd
 import matplotlib.pyplot as plt
 import requests 
 import json
+import os
+import numpy as np
+import time
+from plyer import notification
 from pycoingecko import CoinGeckoAPI
 
 cg = CoinGeckoAPI()
 
-response = requests.get("https://api.coingecko.com/api/v3/coins/list?include_platform=false")
-data = json.loads(response.content)
+while True:
+    response = requests.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h")
+    data = json.loads(response.content)
+    
+    cryptolist = pd.DataFrame(data)
+    pricealert = cryptolist.loc[cryptolist['name'] == 'XRP']['current_price'].values[0]
+    notification.notify(
+        title='XRP',
+        message= f'Current price : ${pricealert}',
+        app_icon=None,  # e.g. 'C:\\icon_32x32.ico'
+        timeout=10,  # seconds
+    )          
+    time.sleep(3600)   
 
-empt = []
-for i in data[1600:1611]:
-    for key in i:
-        empt.append(i['id'])
-        break
 
-
-print(empt)
-pricelist =  cg.get_price(ids = empt, vs_currencies = ['usd'],include_market_cap = "true")
+    
+#print(empt)
+#pricelist =  cg.get_price(ids = empt, vs_currencies = ['usd'],include_market_cap = "true")
 
 
 
-cryptolist = pd.DataFrame(pricelist)
+#cryptolist = pd.DataFrame(pricelist)
 
-print(cryptolist.head())
+#print(cryptolist[:,cryptolist.loc["usd_market_cap"] > 100000] == True)
+#cryptolist.loc[cryptolist['usd']]
 #print(pricelist["ripple"])
+#print(cryptolist)
+
+#lists  = []
+#for key,value in pricelist.items():
+    #if value['usd'] - 0.2 >= 0:
+        #print(key,value)
+        #lists.append(key)
+
+#os.system(f"notify-send \"The price of these coins greater than 20 cents : {list}  \"")
+
+# python -m pip install plyer

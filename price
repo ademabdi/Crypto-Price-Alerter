@@ -6,24 +6,27 @@ import json
 import os
 import numpy as np
 import time
+from time import sleep
 from plyer import notification
 from pycoingecko import CoinGeckoAPI
 
 cg = CoinGeckoAPI()
 
-while True:
-    response = requests.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h")
-    data = json.loads(response.content)
+time.sleep(120)   
+
+response = requests.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h")
+data = json.loads(response.content)
     
-    cryptolist = pd.DataFrame(data)
-    pricealert = cryptolist.loc[cryptolist['name'] == 'XRP']['current_price'].values[0]
+cryptolist = pd.DataFrame(data)
+pricealert = cryptolist.loc[cryptolist['name'] == 'XRP']['current_price'].values[0]
+while True:
     notification.notify(
         title='XRP',
         message= f'Current price : ${pricealert}',
         app_icon=None,  # e.g. 'C:\\icon_32x32.ico'
         timeout=10,  # seconds
     )          
-    time.sleep(3600)   
+    
 
 
     

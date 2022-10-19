@@ -12,42 +12,33 @@ from pycoingecko import CoinGeckoAPI
 
 cg = CoinGeckoAPI()
 
-time.sleep(120)   
-
+# pull list of top 250 coins by marketcap from coingecko api with market cap, current price, 24hr price change, etc.
 response = requests.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h")
 data = json.loads(response.content)
-    
+
+# pull price of sologenic token from the coingecko api (outside of top 250 by marketcap)
+response2 = requests.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=solo-coin&order=market_cap_desc&per_page=100&page=1&sparkline=false")   
+data2 = json.loads(response2.content)
+
+# convert first json object (top 250 coins by marketcap) into a pandas dataframe
 cryptolist = pd.DataFrame(data)
+
+# extract current price of XRP, along with current price of Sologenic
 pricealert = cryptolist.loc[cryptolist['name'] == 'XRP']['current_price'].values[0]
+pricealert2 = data2[0]['current_price']
+
+# use notification method from plyer library and run a while loop to send a desktop notification every {} seconds
 while True:
     notification.notify(
-        title='XRP',
-        message= f'Current price : ${pricealert}',
+        title='XRP & Solo',
+        message= f'Current price : ${pricealert} & ${pricealert2}',
         app_icon=None,  # e.g. 'C:\\icon_32x32.ico'
         timeout=10,  # seconds
     )          
     
-
+    time.sleep(3600)
 
     
-#print(empt)
-#pricelist =  cg.get_price(ids = empt, vs_currencies = ['usd'],include_market_cap = "true")
 
 
 
-#cryptolist = pd.DataFrame(pricelist)
-
-#print(cryptolist[:,cryptolist.loc["usd_market_cap"] > 100000] == True)
-#cryptolist.loc[cryptolist['usd']]
-#print(pricelist["ripple"])
-#print(cryptolist)
-
-#lists  = []
-#for key,value in pricelist.items():
-    #if value['usd'] - 0.2 >= 0:
-        #print(key,value)
-        #lists.append(key)
-
-#os.system(f"notify-send \"The price of these coins greater than 20 cents : {list}  \"")
-
-# python -m pip install plyer

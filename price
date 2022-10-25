@@ -26,7 +26,7 @@ pricealert2 = data2[0]['current_price']
 # use notification method from plyer library and run a while loop to send a desktop notification every {} seconds
 while True:
     notification.notify(
-        title='XRP & Solo',
+        title='XRP & Solo Price Notification',
         message= f'Current price : ${pricealert} & ${pricealert2}',
         app_icon=None,  # e.g. 'C:\\icon_32x32.ico'
         timeout=10,  # seconds

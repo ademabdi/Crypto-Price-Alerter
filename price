@@ -28,7 +28,7 @@ while True:
     notification.notify(
         title='XRP & Solo Price Notification',
         message= f'Current price : ${pricealert} & ${pricealert2}',
-        app_icon=None,  # e.g. 'C:\\icon_32x32.ico'
+        app_icon=r"C:\Users\abdi-\Downloads\xrp.ico",  # XRP icon by Soni Sokell
         timeout=10,  # seconds
     )          
     

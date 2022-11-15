@@ -6,33 +6,55 @@ import time
 from time import sleep
 from plyer import notification
 
+response3 = requests.get("https://api.coingecko.com/api/v3/coins/list")
+
+data3 = json.loads(response3.content)
+
+userinput = input(f"Enter id name for the token you are interested in:")
+
+try:
+    for tokeninfo in data3:
+        for key, value in tokeninfo.items():
+            if tokeninfo['id'] == userinput:
+                break
+
+except ValueError:
+            print("Incorrect input")
+        
 
 
 # pull list of top 250 coins by marketcap from coingecko api with market cap, current price, 24hr price change, etc.
 response = requests.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h")
 data = json.loads(response.content)
 
-# pull price of sologenic token from the coingecko api (outside of top 250 by marketcap)
-response2 = requests.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=solo-coin&order=market_cap_desc&per_page=100&page=1&sparkline=false")   
+# pull price of specific token from the coingecko api 
+response2 = requests.get(f"https://api.coingecko.com/api/v3/coins/{userinput}")   
 data2 = json.loads(response2.content)
 
 # convert first json object (top 250 coins by marketcap) into a pandas dataframe
 cryptolist = pd.DataFrame(data)
 
-# extract current price of XRP, along with current price of Sologenic
+# extract current price of XRP, along with current price of chosen token
 pricealert = cryptolist.loc[cryptolist['name'] == 'XRP']['current_price'].values[0]
-pricealert2 = data2[0]['current_price']
-
+try:
+    pricealert2 = data2["market_data"]['current_price']["usd"]
+except KeyError:
+    print("Incorrect input")
 # use notification method from plyer library and run a while loop to send a desktop notification every {} seconds
+
+
 while True:
-    notification.notify(
-        title='XRP & Solo Price Notification',
-        message= f'Current price : ${pricealert} & ${pricealert2}',
-        app_icon=r"Path\xrp.ico",  # XRP icon by Soni Sokell
-        timeout=10,  # seconds
-    )          
     
+    notification.notify(
+    title=f'XRP & {data2["name"]} Price Notification',
+    message= f'Current price:\nXRP: ${pricealert} \n{data2["tickers"][0]["base"]}: ${pricealert2}',
+    app_icon=r"Path\xrp.ico",  # XRP icon by Soni Sokell
+    timeout=20,  # seconds
+    )          
+
     time.sleep(3600)
+
+
 
     
 

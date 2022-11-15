@@ -1,0 +1,24 @@
+import requests 
+import json
+
+response = requests.get("https://api.coingecko.com/api/v3/coins/list")
+
+data3 = json.loads(response.content)
+
+symbols = []
+
+for tokeninfo in data3:
+    for key, value in tokeninfo.items():
+        symbols.append(tokeninfo["symbol"])
+        
+userinput = input(f"Enter symbol name for the token you are interested in:")
+
+
+for symbol in symbols:
+    if symbol == userinput:
+        print(symbol)
+        break
+    elif symbol != userinput:
+        print("Incorrect input or that token is not in the CoinGecko list")
+        break
+    

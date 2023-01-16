@@ -6,38 +6,53 @@ import time
 from time import sleep
 from plyer import notification
 
-response3 = requests.get("https://api.coingecko.com/api/v3/coins/list")
+response = requests.get("https://api.coingecko.com/api/v3/coins/list")
 
-data3 = json.loads(response3.content)
+data = json.loads(response.content)
 
-userinput = input(f"Enter id name for the token you are interested in:")
+for tokeninfo in data[:100]:
+    for key, value in tokeninfo.items():
+        print(tokeninfo['id'])
 
-try:
-    for tokeninfo in data3:
-        for key, value in tokeninfo.items():
-            if tokeninfo['id'] == userinput:
-                break
+userinput1 = input(f"Enter id name for the token you are interested in:\nList of token ids can be found on the coingecko website (https://www.coingecko.com/en/api/documentation) or select from the list above:\n")
 
-except ValueError:
+userinput2 = input(f"Enter id name for the token you are interested in:\nList of token ids can be found on the coingecko website (https://www.coingecko.com/en/api/documentation) or select from the list above:\n")
+
+for i in range(0,2):
+    try:
+        for tokeninfo in data:
+            for key, value in tokeninfo.items():
+                if tokeninfo['id'] == userinput1 or userinput2:
+                    break
+
+    except KeyError:
             print("Incorrect input")
         
 
 
 # pull list of top 250 coins by marketcap from coingecko api with market cap, current price, 24hr price change, etc.
-response = requests.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h")
-data = json.loads(response.content)
-
-# pull price of specific token from the coingecko api 
-response2 = requests.get(f"https://api.coingecko.com/api/v3/coins/{userinput}")   
+response2 = requests.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h")
 data2 = json.loads(response2.content)
 
+# pull price of specific token from the coingecko api 
+response3 = requests.get(f"https://api.coingecko.com/api/v3/coins/{userinput1}")   
+data3 = json.loads(response3.content)
+
+response4 = requests.get(f"https://api.coingecko.com/api/v3/coins/{userinput2}")   
+data4 = json.loads(response4.content)
+
 # convert first json object (top 250 coins by marketcap) into a pandas dataframe
-cryptolist = pd.DataFrame(data)
+cryptolist = pd.DataFrame(data2)
 
 # extract current price of XRP, along with current price of chosen token
 pricealert = cryptolist.loc[cryptolist['name'] == 'XRP']['current_price'].values[0]
 try:
-    pricealert2 = data2["market_data"]['current_price']["usd"]
+    pricealert3 = data3["market_data"]['current_price']["usd"]
+except KeyError:
+    print("Incorrect input")
+
+try:
+    pricealert4 = data4["market_data"]['current_price']["usd"]
 except KeyError:
     print("Incorrect input")
 # use notification method from plyer library and run a while loop to send a desktop notification every {} seconds
@@ -46,9 +61,9 @@ except KeyError:
 while True:
     
     notification.notify(
-    title=f'XRP & {data2["name"]} Price Notification',
-    message= f'Current price:\nXRP: ${pricealert} \n{data2["tickers"][0]["base"]}: ${pricealert2}',
-    app_icon=r"Path\xrp.ico",  # XRP icon by Soni Sokell
+    title=f'XRP, {data3["name"]}, {data4["name"]} Price Notification',
+    message= f'Current price:\nXRP: ${pricealert} \n{data3["symbol"]}: ${pricealert3} \n{data4["symbol"]}: ${pricealert4}',
+    app_icon=r"C:\Users\abdi-\Downloads\xrp.ico",  # XRP icon by Soni Sokell
     timeout=20,  # seconds
     )          
 

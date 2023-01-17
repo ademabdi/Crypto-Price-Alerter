@@ -63,7 +63,7 @@ while True:
     notification.notify(
     title=f'XRP, {data3["name"]}, {data4["name"]} Price Notification',
     message= f'Current price:\nXRP: ${pricealert} \n{data3["symbol"]}: ${pricealert3} \n{data4["symbol"]}: ${pricealert4}',
-    app_icon=r"path",  # XRP icon by Soni Sokell
+    app_icon=r"xrp.ico",  # XRP icon by Soni Sokell
     timeout=20,  # seconds
     )          
 
